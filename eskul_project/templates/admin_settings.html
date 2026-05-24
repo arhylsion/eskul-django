@@ -1,0 +1,14 @@
+{% extends 'admin_base.html' %}
+
+{% block title %}Settings - Admin Portal{% endblock %}
+{% block header_title %}Settings{% endblock %}
+
+{% block content %}
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8 max-w-2xl">
+    <h3 class="text-lg font-bold text-indigo-950 mb-4">Export Data</h3>
+    <p class="text-gray-500 mb-6 text-sm">Download all student registration and quiz score data in an Excel-compatible format.</p>
+    <a href="{% url 'export_excel' %}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-6 rounded-lg shadow-sm transition-colors inline-block">
+        Download Data
+    </a>
+</div>
+{% endblock %}

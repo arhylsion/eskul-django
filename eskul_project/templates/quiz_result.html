@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Quiz Result{% endblock %}
+
+{% block body_class %}font-sans text-slate-800 min-h-screen bg-gradient-to-br from-slate-50 to-indigo-100 flex items-center justify-center p-6{% endblock %}
+
+{% block content %}
+<div class="w-full max-w-md bg-white/80 backdrop-blur-xl border border-white/40 shadow-2xl rounded-2xl overflow-hidden p-8 text-center">
+    {% if score > 70 %}
+    <div class="w-16 h-16 mx-auto bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-6">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+    </div>
+    <h2 class="text-2xl font-bold text-indigo-950 mb-2">Selamat!</h2>
+    <p class="text-slate-600 mb-6">Anda telah menyelesaikan kuis.</p>
+    {% else %}
+    <div class="w-16 h-16 mx-auto bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mb-6">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+    </div>
+    <h2 class="text-2xl font-bold text-indigo-950 mb-2">Kuis Selesai</h2>
+    <p class="text-slate-600 mb-6">Nilai Anda telah direkam.</p>
+    {% endif %}
+
+    <div class="text-5xl font-extrabold text-indigo-600 mb-8">{{ score }}</div>
+
+    <a href="{% url 'registration_form' %}" class="bg-indigo-950 text-white font-medium py-3 px-8 rounded-lg hover:bg-indigo-900 focus:ring-4 focus:ring-indigo-200 transition-all shadow-md inline-block">
+        Lanjut
+    </a>
+</div>
+{% endblock %}

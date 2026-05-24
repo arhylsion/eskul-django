@@ -1,0 +1,22 @@
+# Git Ignore for Eskul Project
+
+# Nix
+flake.nix
+flake.lock
+.direnv/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Database
+.cache/eskul_mysql/
+
+# Django
+db.sqlite3
+media/
+static/
+local_settings.py

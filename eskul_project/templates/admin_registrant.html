@@ -1,0 +1,203 @@
+{% extends 'admin_base.html' %}
+
+{% block title %}Registrants - Admin Portal{% endblock %}
+{% block header_title %}Registrants{% endblock %}
+{% block header_desc %}Manage student approvals and review quiz scores{% endblock %}
+
+{% block content %}
+
+<div class="flex items-center gap-1 bg-gray-100 p-1 rounded-xl w-fit mb-6">
+    <button id="tab-registered" onclick="switchTab('registered')"
+        class="tab-btn px-5 py-2 rounded-lg text-sm font-semibold transition-all bg-white text-indigo-950 shadow-sm">
+        Registered
+        <span class="ml-2 bg-indigo-100 text-indigo-700 text-xs font-bold px-2 py-0.5 rounded-full">{{ reg_data|length }}</span>
+    </button>
+    <button id="tab-unattempted" onclick="switchTab('unattempted')"
+        class="tab-btn px-5 py-2 rounded-lg text-sm font-semibold transition-all text-gray-500 hover:text-gray-700">
+        Not Yet Started
+        <span class="ml-2 bg-slate-200 text-slate-600 text-xs font-bold px-2 py-0.5 rounded-full">{{ unregistered|length }}</span>
+    </button>
+</div>
+
+<div id="panel-registered" class="tab-panel">
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+
+        <div class="flex items-center gap-2 mb-5 flex-wrap">
+            <span class="text-xs font-semibold text-gray-400 mr-1">Filter:</span>
+            <button onclick="filterStatus('all')" id="pill-all"
+                class="status-pill active px-3 py-1 rounded-full text-xs font-semibold border border-indigo-300 bg-indigo-50 text-indigo-700 transition-all">
+                All
+            </button>
+            <button onclick="filterStatus('pending')" id="pill-pending"
+                class="status-pill px-3 py-1 rounded-full text-xs font-semibold border border-gray-200 text-gray-500 hover:border-orange-300 hover:text-orange-600 hover:bg-orange-50 transition-all">
+                Pending
+            </button>
+            <button onclick="filterStatus('approved')" id="pill-approved"
+                class="status-pill px-3 py-1 rounded-full text-xs font-semibold border border-gray-200 text-gray-500 hover:border-emerald-300 hover:text-emerald-600 hover:bg-emerald-50 transition-all">
+                Approved
+            </button>
+            <button onclick="filterStatus('rejected')" id="pill-rejected"
+                class="status-pill px-3 py-1 rounded-full text-xs font-semibold border border-gray-200 text-gray-500 hover:border-red-300 hover:text-red-600 hover:bg-red-50 transition-all">
+                Rejected
+            </button>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+                <thead>
+                    <tr class="text-gray-400 font-medium border-b border-gray-100">
+                        <th class="pb-3">Name / NIS</th>
+                        <th class="pb-3">Class</th>
+                        <th class="pb-3">Eskul</th>
+                        <th class="pb-3">Score</th>
+                        <th class="pb-3">Status</th>
+                        <th class="pb-3 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="reg-tbody">
+                    {% for item in reg_data %}
+                    <tr class="reg-row border-b border-gray-50 hover:bg-gray-50/50 transition-colors" data-status="{{ item.reg.status }}">
+                        <td class="py-4">
+                            <div class="font-medium text-indigo-950">{{ item.reg.student.nama }}</div>
+                            <div class="text-xs text-gray-400">{{ item.reg.student.nis }}</div>
+                        </td>
+                        <td class="py-4 text-gray-500">{{ item.reg.student.kelas }}</td>
+                        <td class="py-4 text-gray-500">{{ item.reg.eskul.nama_eskul }}</td>
+                        <td class="py-4">
+                            {% if item.result %}
+                                <span class="font-bold {% if item.result.score > 70 %}text-emerald-500{% else %}text-red-500{% endif %}">
+                                    {{ item.result.score }}
+                                </span>
+                            {% else %}
+                                <span class="text-gray-400 text-xs">No quiz</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-4">
+                            {% if item.reg.status == 'approved' %}
+                            <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-xs font-medium">Approved</span>
+                            {% elif item.reg.status == 'pending' %}
+                            <span class="px-3 py-1 rounded-full bg-orange-50 text-orange-600 text-xs font-medium">Pending</span>
+                            {% else %}
+                            <span class="px-3 py-1 rounded-full bg-red-50 text-red-600 text-xs font-medium">Rejected</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-4 text-right">
+                            <div class="flex items-center justify-end gap-2">
+                                {% if item.reg.status == 'pending' %}
+                                    {% if item.result %}
+                                        {% if item.result.score > 70 %}
+                                            <a href="{% url 'approve_registrant' item.reg.id %}" class="bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-colors">Approve</a>
+                                        {% elif not item.result.can_retry %}
+                                            <a href="{% url 'trigger_retry' item.result.id %}" class="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-colors">Allow Retry</a>
+                                        {% else %}
+                                            <span class="text-xs text-indigo-500 font-medium italic">Retry Granted</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-xs text-gray-400">—</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="text-xs text-gray-400">—</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-8 text-gray-400">No registrations found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="panel-unattempted" class="tab-panel hidden">
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+        <p class="text-sm text-gray-400 mb-5">These students have accounts but have not submitted a registration form yet.</p>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+                <thead>
+                    <tr class="text-gray-400 font-medium border-b border-gray-100">
+                        <th class="pb-3">Name</th>
+                        <th class="pb-3">NIS</th>
+                        <th class="pb-3">Class</th>
+                        <th class="pb-3">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in unregistered %}
+                    <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                        <td class="py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 text-xs font-bold">
+                                    {{ student.nama|slice:":1" }}
+                                </div>
+                                <span class="font-medium text-indigo-950">{{ student.nama }}</span>
+                            </div>
+                        </td>
+                        <td class="py-4 text-gray-400 text-xs font-mono">{{ student.nis }}</td>
+                        <td class="py-4 text-gray-500">{{ student.kelas }}</td>
+                        <td class="py-4">
+                            <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-500 text-xs font-medium">Not Started</span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center py-8 text-gray-400">All students have started registration 🎉</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+        document.getElementById('panel-' + tab).classList.remove('hidden');
+
+        document.querySelectorAll('.tab-btn').forEach(b => {
+            b.classList.remove('bg-white', 'text-indigo-950', 'shadow-sm');
+            b.classList.add('text-gray-500');
+        });
+        const activeBtn = document.getElementById('tab-' + tab);
+        activeBtn.classList.add('bg-white', 'text-indigo-950', 'shadow-sm');
+        activeBtn.classList.remove('text-gray-500');
+    }
+
+    function filterStatus(status) {
+        // Update active pill
+        document.querySelectorAll('.status-pill').forEach(p => {
+            p.classList.remove('active', 'bg-indigo-50', 'text-indigo-700', 'border-indigo-300',
+                               'bg-orange-50', 'text-orange-600', 'border-orange-300',
+                               'bg-emerald-50', 'text-emerald-600', 'border-emerald-300',
+                               'bg-red-50', 'text-red-600', 'border-red-300');
+            p.classList.add('border-gray-200', 'text-gray-500');
+        });
+
+        const pill = document.getElementById('pill-' + status);
+        pill.classList.remove('border-gray-200', 'text-gray-500');
+        const colorMap = {
+            all: ['bg-indigo-50', 'text-indigo-700', 'border-indigo-300'],
+            pending: ['bg-orange-50', 'text-orange-600', 'border-orange-300'],
+            approved: ['bg-emerald-50', 'text-emerald-600', 'border-emerald-300'],
+            rejected: ['bg-red-50', 'text-red-600', 'border-red-300'],
+        };
+        pill.classList.add(...colorMap[status]);
+
+        // Filter rows
+        document.querySelectorAll('.reg-row').forEach(row => {
+            if (status === 'all' || row.dataset.status === status) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+</script>
+{% endblock %}
