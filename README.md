@@ -38,16 +38,12 @@ pip install -r requirements.txt
 3. Buat database baru dengan nama `eskul_database` (pastikan collation adalah `utf8mb4_general_ci`).
 4. Jalankan migrasi untuk membuat struktur tabel:
 ```bash
-
-```
 python manage.py makemigrations
 python manage.py migrate
-
 ```
 5. Jalankan seeder untuk mengisi data awal:
-   ```bash
-   python eskul_project/seed_data.py
-
+```bash
+python eskul_project/seed_data.py
 ```
 
 ### 5. Jalankan Aplikasi
@@ -57,15 +53,15 @@ python manage.py runserver
 
 ```
 
-Buka `[http://127.0.0.1:8000/](http://127.0.0.1:8000/)` di browser kamu.
+Buka `[http://127.0.0.1:8000/](http://127.0.0.1:8000/dashboard)` di browser kamu.
 
 ## Akun Login
 
-* **Admin**:
+# **Admin**:
 * Username: `admin`
 * Password: `admin123`
 
 
-* **Siswa (49 Akun)**:
+# **Siswa (49 Akun)**:
 * NIS: `2425000` s/d `2425048`
 * Password: `password123`
